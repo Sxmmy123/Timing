@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizador de Publicación GitHub</title>
+    <!-- Enlace a Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .timer-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #007bff; /* Azul de Bootstrap */
+        }
+        .countdown-label {
+            font-size: 1.2rem;
+            color: #6c757d; /* Gris de Bootstrap */
+        }
+        .finished-message {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #28a745; /* Verde de Bootstrap */
+            display: none; /* Inicialmente oculto */
+        }
+        .explanation-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center timer-container">
+                <h2 class="mb-4">Cuenta Regresiva para la Publicación Fotos Audios Videos</h2>
+                <p class="countdown-label">Tiempo restante hasta la publicación:</p>
+                <div class="timer-display mb-4" id="countdown">
+                    <span id="days">00</span> días,
+                    <span id="hours">00</span> horas,
+                    <span id="minutes">00</span> minutos,
+                    <span id="seconds">00</span> segundos
+                </div>
+                <div class="finished-message" id="finishedMessage">
+                    ¡El tiempo ha terminado! Las imágenes/videos se han publicado (simulado).
+                </div>
+                <p class="explanation-text">
+                    Lo que hacen puede ser considerado intimidación, amenaza o acoso, dependiendo de cómo lo estén haciendo. En Bolivia, nadie puede obligarte a borrar evidencia de un posible delito o acto de corrupción, y hacerlo puede incluso agravar la situación de quien te amenaza.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlace a Bootstrap JS (Popper.js y Bootstrap JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        // Función para obtener la fecha de finalización desde el almacenamiento local o establecerla
+        function getEndDate() {
+            let endDate = localStorage.getItem('githubPublishEndDate');
+            if (endDate) {
+                return new Date(endDate);
+            } else {
+                // Si no hay fecha, establecerla a 7 días desde ahora
+                const now = new Date();
+                const newEndDate = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 días en milisegundos
+                localStorage.setItem('githubPublishEndDate', newEndDate.toISOString());
+                return newEndDate;
+            }
+        }
+
+        const endDate = getEndDate();
+        const countdownDisplay = document.getElementById('countdown');
+        const finishedMessage = document.getElementById('finishedMessage');
+        const daysSpan = document.getElementById('days');
+        const hoursSpan = document.getElementById('hours');
+        const minutesSpan = document.getElementById('minutes');
+        const secondsSpan = document.getElementById('seconds');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = endDate.getTime() - now;
+
+            // Si la cuenta regresiva ha terminado
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                countdownDisplay.style.display = 'none';
+                finishedMessage.style.display = 'block';
+                // Aquí es donde un backend real activaría la publicación
+                console.log("¡Tiempo terminado! Se debería activar la publicación en GitHub.");
+                // Puedes eliminar la fecha de finalización si quieres que se reinicie la próxima vez
+                // localStorage.removeItem('githubPublishEndDate');
+                return;
+            }
+
+            // Cálculos de tiempo para días, horas, minutos y segundos
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Mostrar el resultado en los elementos
+            daysSpan.textContent = String(days).padStart(2, '0');
+            hoursSpan.textContent = String(hours).padStart(2, '0');
+            minutesSpan.textContent = String(minutes).padStart(2, '0');
+            secondsSpan.textContent = String(seconds).padStart(2, '0');
+        }
+
+        // Actualizar la cuenta regresiva cada segundo
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        // Llamar a updateCountdown inmediatamente para evitar un retraso inicial
+        updateCountdown();
+    </script>
+</body>
+</html>
